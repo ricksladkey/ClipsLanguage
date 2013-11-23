@@ -5,3 +5,5 @@ This is an extension for Visual Studio to support the [CLIPS](http://clipsrules.
 Features:
 
 * Syntax Highlighting
+
+![Syntax Highlighting Sample](sample.png?raw=true)

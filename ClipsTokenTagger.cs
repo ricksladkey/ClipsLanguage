@@ -53,28 +53,83 @@ namespace ClipsLanguage
             _buffer = buffer;
             _ClipsTypes = new Dictionary<string, string>
             {
+                // Operators.
                 { "(", PredefinedClassificationTypeNames.Operator },
                 { ")", PredefinedClassificationTypeNames.Operator },
                 { "&", PredefinedClassificationTypeNames.Operator },
                 { "|", PredefinedClassificationTypeNames.Operator },
                 { "~", PredefinedClassificationTypeNames.Operator },
                 { ":", PredefinedClassificationTypeNames.Operator },
-                { "=", PredefinedClassificationTypeNames.Operator },
-                { "<-", PredefinedClassificationTypeNames.Operator },
-                { "=>", PredefinedClassificationTypeNames.Operator },
 
-                { "defclass", PredefinedClassificationTypeNames.Keyword },
-                { "defrule", PredefinedClassificationTypeNames.Keyword },
-                { "deftemplate", PredefinedClassificationTypeNames.Keyword },
+                // Literals.
+                { "TRUE", PredefinedClassificationTypeNames.Literal },
+                { "FALSE", PredefinedClassificationTypeNames.Literal },
+                { "crlf", PredefinedClassificationTypeNames.Literal },
+                { "t", PredefinedClassificationTypeNames.Literal },
 
+                // Language keywords.
+                { "if", PredefinedClassificationTypeNames.Keyword },
+                { "then", PredefinedClassificationTypeNames.Keyword },
                 { "slot", PredefinedClassificationTypeNames.Keyword },
                 { "multislot", PredefinedClassificationTypeNames.Keyword },
                 { "role", PredefinedClassificationTypeNames.Keyword },
                 { "pattern-match", PredefinedClassificationTypeNames.Keyword },
+                { "bind", PredefinedClassificationTypeNames.Keyword },
 
+                // Conditional elements.
+                { "test", PredefinedClassificationTypeNames.Keyword },
+                { "and", PredefinedClassificationTypeNames.Keyword },
+                { "or", PredefinedClassificationTypeNames.Keyword },
+                { "not", PredefinedClassificationTypeNames.Keyword },
+                { "declare", PredefinedClassificationTypeNames.Keyword },
+                { "logical", PredefinedClassificationTypeNames.Keyword },
                 { "object", PredefinedClassificationTypeNames.Keyword },
+                { "exists", PredefinedClassificationTypeNames.Keyword },
+                { "forall", PredefinedClassificationTypeNames.Keyword },
+
+                // Operator-like keywords.
+                { "=", PredefinedClassificationTypeNames.Keyword },
+                { "<-", PredefinedClassificationTypeNames.Keyword },
+                { "=>", PredefinedClassificationTypeNames.Keyword },
+
+                // Definition keywords.
+                { "defgeneric", PredefinedClassificationTypeNames.Keyword },
+                { "defmethod", PredefinedClassificationTypeNames.Keyword },
+                { "defglobal", PredefinedClassificationTypeNames.Keyword },
+                { "defmodule", PredefinedClassificationTypeNames.Keyword },
+                { "defclass", PredefinedClassificationTypeNames.Keyword },
+                { "defrule", PredefinedClassificationTypeNames.Keyword },
+                { "deftemplate", PredefinedClassificationTypeNames.Keyword },
+                { "deffunction", PredefinedClassificationTypeNames.Keyword },
+                { "defmessage-handler", PredefinedClassificationTypeNames.Keyword },
+                { "definstances", PredefinedClassificationTypeNames.Keyword },
+                { "deffacts", PredefinedClassificationTypeNames.Keyword },
+                { "defmodules", PredefinedClassificationTypeNames.Keyword },
+
+                // Attribute constraint.
                 { "is-a", PredefinedClassificationTypeNames.Keyword },
                 { "name", PredefinedClassificationTypeNames.Keyword },
+
+                // Common built-in methods.
+                { "assert", PredefinedClassificationTypeNames.PreprocessorKeyword },
+                { "eq", PredefinedClassificationTypeNames.PreprocessorKeyword },
+                { "send", PredefinedClassificationTypeNames.PreprocessorKeyword },
+                { "instance-address", PredefinedClassificationTypeNames.PreprocessorKeyword },
+                { "str-cat", PredefinedClassificationTypeNames.PreprocessorKeyword },
+                { "format", PredefinedClassificationTypeNames.PreprocessorKeyword },
+                { "open", PredefinedClassificationTypeNames.PreprocessorKeyword },
+                { "close", PredefinedClassificationTypeNames.PreprocessorKeyword },
+                { "run", PredefinedClassificationTypeNames.PreprocessorKeyword },
+                { "exit", PredefinedClassificationTypeNames.PreprocessorKeyword },
+                { "nth$", PredefinedClassificationTypeNames.PreprocessorKeyword },
+                { "progn$", PredefinedClassificationTypeNames.PreprocessorKeyword },
+                { "member$", PredefinedClassificationTypeNames.PreprocessorKeyword },
+                { "create$", PredefinedClassificationTypeNames.PreprocessorKeyword },
+                { "length$", PredefinedClassificationTypeNames.PreprocessorKeyword },
+                { "printout", PredefinedClassificationTypeNames.PreprocessorKeyword },
+                { "find-instance", PredefinedClassificationTypeNames.PreprocessorKeyword },
+                { "find-all-instances", PredefinedClassificationTypeNames.PreprocessorKeyword },
+
             };
         }
 
@@ -103,7 +158,10 @@ namespace ClipsLanguage
                     while (position < length)
                     {
                         if (text[position] == '"')
+                        {
+                            ++position;
                             break;
+                        }
                         if (text[position] == '\\')
                         {
                             ++position;
@@ -147,6 +205,29 @@ namespace ClipsLanguage
             }
         }
 
+        internal string GetTokenType(string token, string lastToken)
+        {
+            if (_ClipsTypes.ContainsKey(token))
+                return _ClipsTypes[token];
+            else if (char.IsWhiteSpace(token[0]))
+                return PredefinedClassificationTypeNames.WhiteSpace;
+            else if (token[0] == ';')
+                return PredefinedClassificationTypeNames.Comment;
+            else if (token[0] == '"')
+                return PredefinedClassificationTypeNames.String;
+            else if (char.IsDigit(token[0]) || token[0] == '-' && char.IsDigit(token[1]))
+                return PredefinedClassificationTypeNames.Number;
+            else if (token[0] == '?' || token[0] == '$' && token[1] == '?')
+                return PredefinedClassificationTypeNames.Identifier;
+            else if (lastToken != null &&
+                lastToken.StartsWith("def") &&
+                _ClipsTypes.ContainsKey(lastToken) &&
+                _ClipsTypes[lastToken] == PredefinedClassificationTypeNames.Keyword)
+                return PredefinedClassificationTypeNames.SymbolDefinition;
+            else
+                return PredefinedClassificationTypeNames.SymbolReference;
+        }
+
         public IEnumerable<ITagSpan<ClipsTokenTag>> GetTags(NormalizedSnapshotSpanCollection spans)
         {
             //Debug.WriteLine("GetTags");
@@ -158,35 +239,21 @@ namespace ClipsLanguage
                 var position = lineStart;
                 var line = containingLine.GetText();
 
+                var lastToken = (string)null;
                 foreach (var token in Tokenize(line))
                 {
+                    var type = GetTokenType(token, lastToken);
                     var tokenSpan = new SnapshotSpan(curSpan.Snapshot,
                         new Span(position, token.Length));
-                    if (tokenSpan.IntersectsWith(curSpan))
+                    if (type != null && tokenSpan.IntersectsWith(curSpan))
                     {
-                        var type = (string)null;
-                        if (_ClipsTypes.ContainsKey(token))
-                            type = _ClipsTypes[token];
-                        else if (char.IsWhiteSpace(token[0]))
-                            type = PredefinedClassificationTypeNames.WhiteSpace;
-                        else if (char.IsWhiteSpace(token[0]))
-                            type = PredefinedClassificationTypeNames.WhiteSpace;
-                        else if (token[0] == ';')
-                            type = PredefinedClassificationTypeNames.Comment;
-                        else if (token[0] == '"')
-                            type = PredefinedClassificationTypeNames.String;
-                        else if (token[0] == '?' || token[0] == '$' && token[1] == '?')
-                            type = PredefinedClassificationTypeNames.Identifier;
-                        else
-                            type = PredefinedClassificationTypeNames.SymbolReference;
-                        if (type != null)
-                        {
-                            var tag = new ClipsTokenTag(type);
-                            var span = new TagSpan<ClipsTokenTag>(tokenSpan, tag);
-                            Debug.WriteLine("{0}", tag);
-                            yield return span;
-                        }
+                        var tag = new ClipsTokenTag(type);
+                        var span = new TagSpan<ClipsTokenTag>(tokenSpan, tag);
+                        //Debug.WriteLine("{0}", tag);
+                        yield return span;
                     }
+                    if (type != PredefinedClassificationTypeNames.WhiteSpace)
+                        lastToken = token;
                     position += token.Length;
                 }
             }

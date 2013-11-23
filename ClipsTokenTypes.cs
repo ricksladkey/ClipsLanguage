@@ -5,8 +5,14 @@ using System.Text;
 
 namespace ClipsLanguage
 {
-    public enum ClipsTokenTypes
+    public enum TokenTypes
     {
-       ClipsComment, ClipsKeyword
+        None,
+        Whitespace,
+        Operator,
+        Comment,
+        Keyword,
+        Variable,
+        String,
     }
 }

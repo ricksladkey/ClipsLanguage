@@ -1,4 +1,32 @@
-﻿;; Defines an Ability object.
+﻿;; Legal actions.
+(defrule LegalActions::Ability_1006
+    (DetermineAvailableMana (PLAYER_ID ?playerId))
+    (object (is-a GameClock) (name [GAME_CLOCK]) (GAME_TREE_NODE ?current))
+    (object
+        (is-a GameZone)
+        (name ?bf-name)
+        (ZONE_CONSTANT_ID ?bf-id)
+        (TYPE ?bfType&:(eq ?bfType ?*ZoneType_Battlefield*)))
+    ?bf-ref <-
+        (object (is-a GameZoneReference) (GAME_TREE_NODE ?current) (NODE_SPECIFIC_ID ?bf-name))
+    ?go <-
+        (object
+            (is-a AttributedInstance)
+            (name ?object-name)
+            (ZONE_ID ?bf-id)
+            (CONTROLLER ?playerId)
+            (IS_TAPPED 0)
+            (ZONE_CONSTANT_ID ?objectId)
+            (ABILITIES $?abilities&:(member$ 1006 ?abilities)))
+    ?object-ref <-
+        (object
+            (is-a GameObjectReference)
+            (NODE_SPECIFIC_ID ?object-name)
+            (GAME_TREE_NODE ?current))
+    =>
+    (addAvailableMana ?objectId ?playerId (create$ ?*ManaColor_X*)))
+
+;; Defines an Ability object.
 (defclass MAIN::Ability (is-a USER)
     (role concrete)
     (pattern-match reactive)

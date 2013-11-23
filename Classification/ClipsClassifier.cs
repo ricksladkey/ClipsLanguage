@@ -11,21 +11,22 @@ namespace ClipsLanguage
     using Microsoft.VisualStudio.Text.Editor;
     using Microsoft.VisualStudio.Text.Tagging;
     using Microsoft.VisualStudio.Utilities;
+    using Microsoft.VisualStudio.Language.StandardClassification;
 
     [Export(typeof(ITaggerProvider))]
-    [ContentType("Clips")]
+    [ContentType("clips")]
     [TagType(typeof(ClassificationTag))]
     internal sealed class ClipsClassifierProvider : ITaggerProvider
     {
 
         [Export]
-        [Name("Clips")]
+        [Name("clips")]
         [BaseDefinition("code")]
         internal static ContentTypeDefinition ClipsContentType = null;
 
         [Export]
         [FileExtension(".clp")]
-        [ContentType("Clips")]
+        [ContentType("clips")]
         internal static FileExtensionToContentTypeDefinition ClipsFileType = null;
 
         [Import]
@@ -48,7 +49,7 @@ namespace ClipsLanguage
     {
         ITextBuffer _buffer;
         ITagAggregator<ClipsTokenTag> _aggregator;
-        IDictionary<ClipsTokenTypes, IClassificationType> _ClipsTypes;
+        IDictionary<TokenTypes, IClassificationType> _ClipsTypes;
 
         internal ClipsClassifier(ITextBuffer buffer, 
                                ITagAggregator<ClipsTokenTag> ClipsTagAggregator, 
@@ -56,9 +57,33 @@ namespace ClipsLanguage
         {
             _buffer = buffer;
             _aggregator = ClipsTagAggregator;
-            _ClipsTypes = new Dictionary<ClipsTokenTypes, IClassificationType>();
-            _ClipsTypes[ClipsTokenTypes.ClipsComment] = typeService.GetClassificationType("ClipsComment");
-            _ClipsTypes[ClipsTokenTypes.ClipsKeyword] = typeService.GetClassificationType("ClipsKeyword");
+            _ClipsTypes = new Dictionary<TokenTypes, IClassificationType>
+            {
+                {
+                    TokenTypes.Whitespace,
+                    typeService.GetClassificationType(PredefinedClassificationTypeNames.WhiteSpace)
+                },
+                {
+                    TokenTypes.Operator,
+                    typeService.GetClassificationType(PredefinedClassificationTypeNames.Operator)
+                },
+                {
+                    TokenTypes.Comment,
+                    typeService.GetClassificationType(PredefinedClassificationTypeNames.Comment)
+                },
+                {
+                    TokenTypes.Keyword,
+                    typeService.GetClassificationType(PredefinedClassificationTypeNames.Keyword)
+                },
+                {
+                    TokenTypes.Variable,
+                    typeService.GetClassificationType(PredefinedClassificationTypeNames.Identifier)
+                },
+                {
+                    TokenTypes.String,
+                    typeService.GetClassificationType(PredefinedClassificationTypeNames.String)
+                },
+            };
         }
 
         public event EventHandler<SnapshotSpanEventArgs> TagsChanged

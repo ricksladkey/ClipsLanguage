@@ -15,7 +15,7 @@ namespace ClipsLanguage
     using System.Text;
 
     [Export(typeof(ITaggerProvider))]
-    [ContentType("Clips")]
+    [ContentType("clips")]
     [TagType(typeof(ClipsTokenTag))]
     internal sealed class ClipsTokenTagProvider : ITaggerProvider
     {
@@ -28,11 +28,16 @@ namespace ClipsLanguage
 
     public class ClipsTokenTag : ITag 
     {
-        public ClipsTokenTypes type { get; private set; }
+        public TokenTypes type { get; private set; }
 
-        public ClipsTokenTag(ClipsTokenTypes type)
+        public ClipsTokenTag(TokenTypes type)
         {
             this.type = type;
+        }
+
+        public override string ToString()
+        {
+            return string.Format("Tag: {0}", type);
         }
     }
 
@@ -40,15 +45,36 @@ namespace ClipsLanguage
     {
 
         ITextBuffer _buffer;
-        IDictionary<string, ClipsTokenTypes> _ClipsTypes;
+        IDictionary<string, TokenTypes> _ClipsTypes;
 
         internal ClipsTokenTagger(ITextBuffer buffer)
         {
             _buffer = buffer;
-            _ClipsTypes = new Dictionary<string, ClipsTokenTypes>();
-            _ClipsTypes["defclass"] = ClipsTokenTypes.ClipsKeyword;
-            _ClipsTypes["defrule"] = ClipsTokenTypes.ClipsKeyword;
-            _ClipsTypes["deftemplate"] = ClipsTokenTypes.ClipsKeyword;
+            _ClipsTypes = new Dictionary<string, TokenTypes>
+            {
+                { "(", TokenTypes.Operator },
+                { ")", TokenTypes.Operator },
+                { "&", TokenTypes.Operator },
+                { "|", TokenTypes.Operator },
+                { "~", TokenTypes.Operator },
+                { ":", TokenTypes.Operator },
+                { "=", TokenTypes.Operator },
+                { "<-", TokenTypes.Operator },
+                { "=>", TokenTypes.Operator },
+
+                { "defclass", TokenTypes.Keyword },
+                { "defrule", TokenTypes.Keyword },
+                { "deftemplate", TokenTypes.Keyword },
+
+                { "slot", TokenTypes.Keyword },
+                { "multislot", TokenTypes.Keyword },
+                { "role", TokenTypes.Keyword },
+                { "pattern-match", TokenTypes.Keyword },
+
+                { "object", TokenTypes.Keyword },
+                { "is-a", TokenTypes.Keyword },
+                { "name", TokenTypes.Keyword },
+            };
         }
 
         public event EventHandler<SnapshotSpanEventArgs> TagsChanged
@@ -59,96 +85,64 @@ namespace ClipsLanguage
 
         internal IEnumerable<string> Tokenize(string text)
         {
-            int position = 0;
-            int length = text.Length;
+            var position = 0;
+            var length = text.Length;
             while (position < length)
             {
+                var start = position;
                 var c = text[position];
-                var buffer = new StringBuilder();
 
-                if ("()&|~".IndexOf(c) != -1)
+                if ("()&|~".IndexOf(text[position]) != -1)
                 {
-                    yield return c.ToString();
                     ++position;
-                    continue;
                 }
-
-                if (c == '"')
+                else if (text[position] == '"')
                 {
                     ++position;
                     while (position < length)
                     {
-                        c = text[position];
-                        if (c == '"')
+                        if (text[position] == '"')
                             break;
-                        if (c == '\\')
+                        if (text[position] == '\\')
                         {
-                            buffer.Append(c);
                             ++position;
                             if (position < length)
-                            {
-                                c = text[position];
-                                buffer.Append(c);
                                 ++position;
-                            }
                         }
                         else
                         {
-                            buffer.Append(c);
                             ++position;
                         }
                     }
-                    yield return buffer.ToString();
-                    continue;
                 }
-
-                if (char.IsWhiteSpace(c))
+                else if (char.IsWhiteSpace(text[position]))
                 {
-                    buffer.Append(c);
                     ++position;
                     while (position < length)
                     {
-                        c = text[position];
-                        if (!char.IsWhiteSpace(c))
+                        if (!char.IsWhiteSpace(text[position]))
                             break;
-                        buffer.Append(c);
                         ++position;
                     }
-                    yield return buffer.ToString();
-                    continue;
-
                 }
-
-                if (c == ';')
+                else if (text[position] == ';')
                 {
-                    buffer.Append(c);
+                    ++position;
+                    while (position < length)
+                        ++position;
+                }
+                else if (!char.IsWhiteSpace(text[position]))
+                {
                     ++position;
                     while (position < length)
                     {
-                        c = text[position];
-                        buffer.Append(c);
-                        ++position;
-                    }
-                    yield return buffer.ToString();
-                    continue;
-
-                }
-
-                if (!char.IsWhiteSpace(c))
-                {
-                    buffer.Append(c);
-                    ++position;
-                    while (position < length)
-                    {
-                        c = text[position];
-                        if (char.IsWhiteSpace(c) || "()&|<~".IndexOf(c) != -1)
+                        if (char.IsWhiteSpace(text[position]) ||
+                            "()&|<~".IndexOf(text[position]) != -1)
                             break;
-                        buffer.Append(c);
                         ++position;
                     }
-                    yield return buffer.ToString();
-                    continue;
                 }
+                yield return text.Substring(start, position - start);
             }
         }
 
@@ -162,34 +156,35 @@ namespace ClipsLanguage
                 var lineStart = containingLine.Start.Position;
                 var position = lineStart;
                 var line = containingLine.GetText();
-                var commentStart = line.IndexOf(';');
-                var code = line;
-                if (commentStart != -1)
-                    code = code.Substring(0, commentStart);
-                var tokens = Tokenize(code);
 
-                foreach (var token in Tokenize(code))
+                foreach (var token in Tokenize(line))
                 {
-                    if (_ClipsTypes.ContainsKey(token))
+                    var tokenSpan = new SnapshotSpan(curSpan.Snapshot,
+                        new Span(position, token.Length));
+                    if (tokenSpan.IntersectsWith(curSpan))
                     {
-                        var tokenSpan = new SnapshotSpan(curSpan.Snapshot,
-                            new Span(position, token.Length));
-                        if (tokenSpan.IntersectsWith(curSpan)) 
-                            yield return new TagSpan<ClipsTokenTag>(tokenSpan, 
-                                new ClipsTokenTag(_ClipsTypes[token]));
+                        var type = TokenTypes.None;
+                        if (_ClipsTypes.ContainsKey(token))
+                            type = _ClipsTypes[token];
+                        else if (char.IsWhiteSpace(token[0]))
+                            type = TokenTypes.Whitespace;
+                        else if (char.IsWhiteSpace(token[0]))
+                            type = TokenTypes.Whitespace;
+                        else if (token[0] == '?' || token[0] == '$' && token[1] == '?')
+                            type = TokenTypes.Variable;
+                        else if (token[0] == ';')
+                            type = TokenTypes.Comment;
+                        else if (token[0] == '"')
+                            type = TokenTypes.String;
+                        if (type != TokenTypes.None)
+                        {
+                            var tag = new ClipsTokenTag(type);
+                            var span = new TagSpan<ClipsTokenTag>(tokenSpan, tag);
+                            Debug.WriteLine("{0}", tag);
+                            yield return span;
+                        }
                     }
                     position += token.Length;
-                }
-
-                if (commentStart != -1)
-                {
-                    var start = lineStart + commentStart;
-                    var end = line.Length - commentStart;
-                    var tokenSpan = new SnapshotSpan(curSpan.Snapshot,
-                        new Span(start, end));
-                    if (tokenSpan.IntersectsWith(curSpan)) 
-                        yield return new TagSpan<ClipsTokenTag>(tokenSpan,
-                            new ClipsTokenTag(ClipsTokenTypes.ClipsComment));
                 }
             }
         }

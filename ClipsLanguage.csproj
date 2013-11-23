@@ -89,6 +89,9 @@
     </None>
     <None Include="test.clp" />
   </ItemGroup>
+  <ItemGroup>
+    <Content Include="license.txt" />
+  </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
     <VSToolsPath Condition="'$(VSToolsPath)' == ''">$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)</VSToolsPath>

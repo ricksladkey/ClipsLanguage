@@ -6,6 +6,7 @@
     <Version>1.0</Version>
     <Description>This is a classifier extension to the Visual Studio Editor for the CLIPS Language.</Description>
     <Locale>1033</Locale>
+    <License>license.txt</License>
     <SupportedProducts>
       <VisualStudio Version="10.0">
         <Edition>Ultimate</Edition>

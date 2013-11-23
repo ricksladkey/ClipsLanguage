@@ -75,6 +75,8 @@ namespace ClipsLanguage
                 { "role", PredefinedClassificationTypeNames.Keyword },
                 { "pattern-match", PredefinedClassificationTypeNames.Keyword },
                 { "bind", PredefinedClassificationTypeNames.Keyword },
+                { "assert", PredefinedClassificationTypeNames.Keyword },
+                { "retract", PredefinedClassificationTypeNames.Keyword },
 
                 // Conditional elements.
                 { "test", PredefinedClassificationTypeNames.Keyword },
@@ -106,12 +108,11 @@ namespace ClipsLanguage
                 { "deffacts", PredefinedClassificationTypeNames.Keyword },
                 { "defmodules", PredefinedClassificationTypeNames.Keyword },
 
-                // Attribute constraint.
+                // Attribute constraints.
                 { "is-a", PredefinedClassificationTypeNames.Keyword },
                 { "name", PredefinedClassificationTypeNames.Keyword },
 
                 // Common built-in methods.
-                { "assert", PredefinedClassificationTypeNames.PreprocessorKeyword },
                 { "eq", PredefinedClassificationTypeNames.PreprocessorKeyword },
                 { "send", PredefinedClassificationTypeNames.PreprocessorKeyword },
                 { "instance-address", PredefinedClassificationTypeNames.PreprocessorKeyword },

@@ -207,17 +207,19 @@ namespace ClipsLanguage
 
         internal string GetTokenType(string token, string lastToken)
         {
+            var char0 = token[0];
+            var char1 = token.Length >= 2 ? token[1] : (char)0;
             if (_ClipsTypes.ContainsKey(token))
                 return _ClipsTypes[token];
-            else if (char.IsWhiteSpace(token[0]))
+            else if (char.IsWhiteSpace(char0))
                 return PredefinedClassificationTypeNames.WhiteSpace;
-            else if (token[0] == ';')
+            else if (char0 == ';')
                 return PredefinedClassificationTypeNames.Comment;
-            else if (token[0] == '"')
+            else if (char0 == '"')
                 return PredefinedClassificationTypeNames.String;
-            else if (char.IsDigit(token[0]) || token[0] == '-' && char.IsDigit(token[1]))
+            else if (char.IsDigit(char0) || char0 == '-' && char.IsDigit(char1))
                 return PredefinedClassificationTypeNames.Number;
-            else if (token[0] == '?' || token[0] == '$' && token[1] == '?')
+            else if (char0 == '?' || char0 == '$' && char1 == '?')
                 return PredefinedClassificationTypeNames.Identifier;
             else if (lastToken != null &&
                 lastToken.StartsWith("def") &&

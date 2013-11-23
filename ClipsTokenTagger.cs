@@ -48,100 +48,119 @@ namespace ClipsLanguage
         ITextBuffer _buffer;
         IDictionary<string, string> _ClipsTypes;
 
+        public static string Operator = PredefinedClassificationTypeNames.Operator;
+        public static string Literal = PredefinedClassificationTypeNames.Literal;
+        public static string LanguageKeyword = PredefinedClassificationTypeNames.Keyword;
+        public static string OperatorKeyword = PredefinedClassificationTypeNames.Keyword;
+        public static string DefinitionKeyword = PredefinedClassificationTypeNames.Keyword;
+        public static string EnvironmentCommand = PredefinedClassificationTypeNames.Keyword;
+        public static string ConditionalKeyword = PredefinedClassificationTypeNames.SymbolReference;
+        public static string AttributeConstraint = PredefinedClassificationTypeNames.SymbolReference;
+        public static string BuiltinFunction = PredefinedClassificationTypeNames.PreprocessorKeyword;
+
         internal ClipsTokenTagger(ITextBuffer buffer)
         {
             _buffer = buffer;
             _ClipsTypes = new Dictionary<string, string>
             {
                 // Operators.
-                { "(", PredefinedClassificationTypeNames.Operator },
-                { ")", PredefinedClassificationTypeNames.Operator },
-                { "&", PredefinedClassificationTypeNames.Operator },
-                { "|", PredefinedClassificationTypeNames.Operator },
-                { "~", PredefinedClassificationTypeNames.Operator },
-                { ":", PredefinedClassificationTypeNames.Operator },
+                { "(", Operator },
+                { ")", Operator },
+                { "&", Operator },
+                { "|", Operator },
+                { "~", Operator },
+                { ":", Operator },
 
                 // Literals.
-                { "TRUE", PredefinedClassificationTypeNames.Literal },
-                { "FALSE", PredefinedClassificationTypeNames.Literal },
-                { "crlf", PredefinedClassificationTypeNames.Literal },
-                { "t", PredefinedClassificationTypeNames.Literal },
+                { "TRUE", Literal },
+                { "FALSE", Literal },
+                { "crlf", Literal },
+                { "t", Literal },
+                { "nil", Literal },
 
                 // Language keywords.
-                { "if", PredefinedClassificationTypeNames.Keyword },
-                { "then", PredefinedClassificationTypeNames.Keyword },
-                { "else", PredefinedClassificationTypeNames.Keyword },
-                { "loop-for-count", PredefinedClassificationTypeNames.Keyword },
-                { "while", PredefinedClassificationTypeNames.Keyword },
-                { "return", PredefinedClassificationTypeNames.Keyword },
-                { "slot", PredefinedClassificationTypeNames.Keyword },
-                { "multislot", PredefinedClassificationTypeNames.Keyword },
-                { "role", PredefinedClassificationTypeNames.Keyword },
-                { "pattern-match", PredefinedClassificationTypeNames.Keyword },
-                { "bind", PredefinedClassificationTypeNames.Keyword },
-
-                // Common language support methods.
-                { "assert", PredefinedClassificationTypeNames.Keyword },
-                { "retract", PredefinedClassificationTypeNames.Keyword },
-                { "focus", PredefinedClassificationTypeNames.Keyword },
-                { "batch", PredefinedClassificationTypeNames.Keyword },
-                { "run", PredefinedClassificationTypeNames.Keyword },
-                { "reset", PredefinedClassificationTypeNames.Keyword },
-                { "make-instance", PredefinedClassificationTypeNames.Keyword },
-                { "set-strategy", PredefinedClassificationTypeNames.Keyword },
-
-                // Conditional elements.
-                { "test", PredefinedClassificationTypeNames.Keyword },
-                { "and", PredefinedClassificationTypeNames.Keyword },
-                { "or", PredefinedClassificationTypeNames.Keyword },
-                { "not", PredefinedClassificationTypeNames.Keyword },
-                { "declare", PredefinedClassificationTypeNames.Keyword },
-                { "logical", PredefinedClassificationTypeNames.Keyword },
-                { "object", PredefinedClassificationTypeNames.Keyword },
-                { "exists", PredefinedClassificationTypeNames.Keyword },
-                { "forall", PredefinedClassificationTypeNames.Keyword },
-
-                // Operator-like keywords.
-                { "=", PredefinedClassificationTypeNames.Keyword },
-                { "<-", PredefinedClassificationTypeNames.Keyword },
-                { "=>", PredefinedClassificationTypeNames.Keyword },
+                { "if", LanguageKeyword },
+                { "then", LanguageKeyword },
+                { "else", LanguageKeyword },
+                { "loop-for-count", LanguageKeyword },
+                { "while", LanguageKeyword },
+                { "return", LanguageKeyword },
+                { "slot", LanguageKeyword },
+                { "multislot", LanguageKeyword },
+                { "role", LanguageKeyword },
+                { "pattern-match", LanguageKeyword },
+                { "bind", LanguageKeyword },
+                { "progn", LanguageKeyword },
+                { "progn$", LanguageKeyword },
+                { "break", LanguageKeyword },
+                { "switch", LanguageKeyword },
+                { "is", LanguageKeyword },
 
                 // Definition keywords.
-                { "defgeneric", PredefinedClassificationTypeNames.Keyword },
-                { "defmethod", PredefinedClassificationTypeNames.Keyword },
-                { "defglobal", PredefinedClassificationTypeNames.Keyword },
-                { "defmodule", PredefinedClassificationTypeNames.Keyword },
-                { "defclass", PredefinedClassificationTypeNames.Keyword },
-                { "defrule", PredefinedClassificationTypeNames.Keyword },
-                { "deftemplate", PredefinedClassificationTypeNames.Keyword },
-                { "deffunction", PredefinedClassificationTypeNames.Keyword },
-                { "defmessage-handler", PredefinedClassificationTypeNames.Keyword },
-                { "definstances", PredefinedClassificationTypeNames.Keyword },
-                { "deffacts", PredefinedClassificationTypeNames.Keyword },
-                { "defmodules", PredefinedClassificationTypeNames.Keyword },
+                { "defgeneric", DefinitionKeyword },
+                { "defmethod", DefinitionKeyword },
+                { "defglobal", DefinitionKeyword },
+                { "defmodule", DefinitionKeyword },
+                { "defclass", DefinitionKeyword },
+                { "defrule", DefinitionKeyword },
+                { "deftemplate", DefinitionKeyword },
+                { "deffunction", DefinitionKeyword },
+                { "defmessage-handler", DefinitionKeyword },
+                { "definstances", DefinitionKeyword },
+                { "deffacts", DefinitionKeyword },
+                { "defmodules", DefinitionKeyword },
+
+                // Operator-like keywords.
+                { "<-", OperatorKeyword },
+                { "=>", OperatorKeyword },
+
+                // Environment commands.
+                { "clear", EnvironmentCommand },
+                { "exit", EnvironmentCommand },
+                { "facts", EnvironmentCommand },
+                { "assert", EnvironmentCommand },
+                { "retract", EnvironmentCommand },
+                { "focus", EnvironmentCommand },
+                { "batch", EnvironmentCommand },
+                { "batch*", EnvironmentCommand },
+                { "run", EnvironmentCommand },
+                { "reset", EnvironmentCommand },
+                { "make-instance", EnvironmentCommand },
+                { "set-strategy", EnvironmentCommand },
+                { "watch", EnvironmentCommand },
+
+                // Conditional keywords.
+                { "test", ConditionalKeyword },
+                { "and", ConditionalKeyword },
+                { "or", ConditionalKeyword },
+                { "not", ConditionalKeyword },
+                { "declare", ConditionalKeyword },
+                { "logical", ConditionalKeyword },
+                { "object", ConditionalKeyword },
+                { "exists", ConditionalKeyword },
+                { "forall", ConditionalKeyword },
 
                 // Attribute constraints.
-                { "is-a", PredefinedClassificationTypeNames.Keyword },
-                { "name", PredefinedClassificationTypeNames.Keyword },
+                { "is-a", AttributeConstraint },
+                { "name", AttributeConstraint },
 
-                // Common built-in methods.
-                { "eq", PredefinedClassificationTypeNames.PreprocessorKeyword },
-                { "neq", PredefinedClassificationTypeNames.PreprocessorKeyword },
-                { "send", PredefinedClassificationTypeNames.PreprocessorKeyword },
-                { "instance-address", PredefinedClassificationTypeNames.PreprocessorKeyword },
-                { "str-cat", PredefinedClassificationTypeNames.PreprocessorKeyword },
-                { "format", PredefinedClassificationTypeNames.PreprocessorKeyword },
-                { "open", PredefinedClassificationTypeNames.PreprocessorKeyword },
-                { "close", PredefinedClassificationTypeNames.PreprocessorKeyword },
-                { "exit", PredefinedClassificationTypeNames.PreprocessorKeyword },
-                { "nth$", PredefinedClassificationTypeNames.PreprocessorKeyword },
-                { "progn$", PredefinedClassificationTypeNames.PreprocessorKeyword },
-                { "member$", PredefinedClassificationTypeNames.PreprocessorKeyword },
-                { "create$", PredefinedClassificationTypeNames.PreprocessorKeyword },
-                { "length$", PredefinedClassificationTypeNames.PreprocessorKeyword },
-                { "printout", PredefinedClassificationTypeNames.PreprocessorKeyword },
-                { "find-instance", PredefinedClassificationTypeNames.PreprocessorKeyword },
-                { "find-all-instances", PredefinedClassificationTypeNames.PreprocessorKeyword },
+                // Common built-in functions.
+                { "=", BuiltinFunction },
+                { "eq", BuiltinFunction },
+                { "neq", BuiltinFunction },
+                { "send", BuiltinFunction },
+                { "instance-address", BuiltinFunction },
+                { "str-cat", BuiltinFunction },
+                { "format", BuiltinFunction },
+                { "open", BuiltinFunction },
+                { "close", BuiltinFunction },
+                { "nth$", BuiltinFunction },
+                { "member$", BuiltinFunction },
+                { "create$", BuiltinFunction },
+                { "length$", BuiltinFunction },
+                { "printout", BuiltinFunction },
+                { "find-instance", BuiltinFunction },
+                { "find-all-instances", BuiltinFunction },
             };
         }
 
@@ -239,7 +258,7 @@ namespace ClipsLanguage
                 _ClipsTypes[lastToken] == PredefinedClassificationTypeNames.Keyword)
                 return PredefinedClassificationTypeNames.SymbolDefinition;
             else
-                return PredefinedClassificationTypeNames.SymbolReference;
+                return PredefinedClassificationTypeNames.Other;
         }
 
         public IEnumerable<ITagSpan<ClipsTokenTag>> GetTags(NormalizedSnapshotSpanCollection spans)

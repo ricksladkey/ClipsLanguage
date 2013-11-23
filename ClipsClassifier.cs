@@ -1,18 +1,15 @@
-﻿// Copyright (c) Microsoft Corporation
-// All rights reserved
+﻿using Microsoft.VisualStudio.Language.StandardClassification;
+using Microsoft.VisualStudio.Text;
+using Microsoft.VisualStudio.Text.Classification;
+using Microsoft.VisualStudio.Text.Tagging;
+using Microsoft.VisualStudio.Utilities;
+using System;
+using System.Collections.Generic;
+using System.ComponentModel.Composition;
+using System.Linq;
 
 namespace ClipsLanguage
 {
-    using System;
-    using System.Collections.Generic;
-    using System.ComponentModel.Composition;
-    using Microsoft.VisualStudio.Text;
-    using Microsoft.VisualStudio.Text.Classification;
-    using Microsoft.VisualStudio.Text.Editor;
-    using Microsoft.VisualStudio.Text.Tagging;
-    using Microsoft.VisualStudio.Utilities;
-    using Microsoft.VisualStudio.Language.StandardClassification;
-
     [Export(typeof(ITaggerProvider))]
     [ContentType("clips")]
     [TagType(typeof(ClassificationTag))]
@@ -47,9 +44,29 @@ namespace ClipsLanguage
 
     internal sealed class ClipsClassifier : ITagger<ClassificationTag>
     {
+        internal static string[] PredefinedTypes = new string[]
+        {
+            PredefinedClassificationTypeNames.Character,
+            PredefinedClassificationTypeNames.Comment,
+            PredefinedClassificationTypeNames.ExcludedCode,
+            PredefinedClassificationTypeNames.FormalLanguage,
+            PredefinedClassificationTypeNames.Identifier,
+            PredefinedClassificationTypeNames.Keyword,
+            PredefinedClassificationTypeNames.Literal,
+            PredefinedClassificationTypeNames.NaturalLanguage,
+            PredefinedClassificationTypeNames.Number,
+            PredefinedClassificationTypeNames.Operator,
+            PredefinedClassificationTypeNames.Other,
+            PredefinedClassificationTypeNames.PreprocessorKeyword,
+            PredefinedClassificationTypeNames.String,
+            PredefinedClassificationTypeNames.SymbolDefinition,
+            PredefinedClassificationTypeNames.SymbolReference,
+            PredefinedClassificationTypeNames.WhiteSpace,
+        };
+
         ITextBuffer _buffer;
         ITagAggregator<ClipsTokenTag> _aggregator;
-        IDictionary<TokenTypes, IClassificationType> _ClipsTypes;
+        IDictionary<string, IClassificationType> _ClipsTypes;
 
         internal ClipsClassifier(ITextBuffer buffer, 
                                ITagAggregator<ClipsTokenTag> ClipsTagAggregator, 
@@ -57,33 +74,9 @@ namespace ClipsLanguage
         {
             _buffer = buffer;
             _aggregator = ClipsTagAggregator;
-            _ClipsTypes = new Dictionary<TokenTypes, IClassificationType>
-            {
-                {
-                    TokenTypes.Whitespace,
-                    typeService.GetClassificationType(PredefinedClassificationTypeNames.WhiteSpace)
-                },
-                {
-                    TokenTypes.Operator,
-                    typeService.GetClassificationType(PredefinedClassificationTypeNames.Operator)
-                },
-                {
-                    TokenTypes.Comment,
-                    typeService.GetClassificationType(PredefinedClassificationTypeNames.Comment)
-                },
-                {
-                    TokenTypes.Keyword,
-                    typeService.GetClassificationType(PredefinedClassificationTypeNames.Keyword)
-                },
-                {
-                    TokenTypes.Variable,
-                    typeService.GetClassificationType(PredefinedClassificationTypeNames.Identifier)
-                },
-                {
-                    TokenTypes.String,
-                    typeService.GetClassificationType(PredefinedClassificationTypeNames.String)
-                },
-            };
+            _ClipsTypes = PredefinedTypes.Select(
+                type => Tuple.Create(type, typeService.GetClassificationType(type))
+            ).ToDictionary(tuple => tuple.Item1, tuple => tuple.Item2);
         }
 
         public event EventHandler<SnapshotSpanEventArgs> TagsChanged

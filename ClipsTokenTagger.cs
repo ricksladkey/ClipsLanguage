@@ -13,6 +13,7 @@ namespace ClipsLanguage
     using Microsoft.VisualStudio.Utilities;
     using System.Diagnostics;
     using System.Text;
+    using Microsoft.VisualStudio.Language.StandardClassification;
 
     [Export(typeof(ITaggerProvider))]
     [ContentType("clips")]
@@ -28,9 +29,9 @@ namespace ClipsLanguage
 
     public class ClipsTokenTag : ITag 
     {
-        public TokenTypes type { get; private set; }
+        public string type { get; private set; }
 
-        public ClipsTokenTag(TokenTypes type)
+        public ClipsTokenTag(string type)
         {
             this.type = type;
         }
@@ -45,35 +46,35 @@ namespace ClipsLanguage
     {
 
         ITextBuffer _buffer;
-        IDictionary<string, TokenTypes> _ClipsTypes;
+        IDictionary<string, string> _ClipsTypes;
 
         internal ClipsTokenTagger(ITextBuffer buffer)
         {
             _buffer = buffer;
-            _ClipsTypes = new Dictionary<string, TokenTypes>
+            _ClipsTypes = new Dictionary<string, string>
             {
-                { "(", TokenTypes.Operator },
-                { ")", TokenTypes.Operator },
-                { "&", TokenTypes.Operator },
-                { "|", TokenTypes.Operator },
-                { "~", TokenTypes.Operator },
-                { ":", TokenTypes.Operator },
-                { "=", TokenTypes.Operator },
-                { "<-", TokenTypes.Operator },
-                { "=>", TokenTypes.Operator },
+                { "(", PredefinedClassificationTypeNames.Operator },
+                { ")", PredefinedClassificationTypeNames.Operator },
+                { "&", PredefinedClassificationTypeNames.Operator },
+                { "|", PredefinedClassificationTypeNames.Operator },
+                { "~", PredefinedClassificationTypeNames.Operator },
+                { ":", PredefinedClassificationTypeNames.Operator },
+                { "=", PredefinedClassificationTypeNames.Operator },
+                { "<-", PredefinedClassificationTypeNames.Operator },
+                { "=>", PredefinedClassificationTypeNames.Operator },
 
-                { "defclass", TokenTypes.Keyword },
-                { "defrule", TokenTypes.Keyword },
-                { "deftemplate", TokenTypes.Keyword },
+                { "defclass", PredefinedClassificationTypeNames.Keyword },
+                { "defrule", PredefinedClassificationTypeNames.Keyword },
+                { "deftemplate", PredefinedClassificationTypeNames.Keyword },
 
-                { "slot", TokenTypes.Keyword },
-                { "multislot", TokenTypes.Keyword },
-                { "role", TokenTypes.Keyword },
-                { "pattern-match", TokenTypes.Keyword },
+                { "slot", PredefinedClassificationTypeNames.Keyword },
+                { "multislot", PredefinedClassificationTypeNames.Keyword },
+                { "role", PredefinedClassificationTypeNames.Keyword },
+                { "pattern-match", PredefinedClassificationTypeNames.Keyword },
 
-                { "object", TokenTypes.Keyword },
-                { "is-a", TokenTypes.Keyword },
-                { "name", TokenTypes.Keyword },
+                { "object", PredefinedClassificationTypeNames.Keyword },
+                { "is-a", PredefinedClassificationTypeNames.Keyword },
+                { "name", PredefinedClassificationTypeNames.Keyword },
             };
         }
 
@@ -163,20 +164,22 @@ namespace ClipsLanguage
                         new Span(position, token.Length));
                     if (tokenSpan.IntersectsWith(curSpan))
                     {
-                        var type = TokenTypes.None;
+                        var type = (string)null;
                         if (_ClipsTypes.ContainsKey(token))
                             type = _ClipsTypes[token];
                         else if (char.IsWhiteSpace(token[0]))
-                            type = TokenTypes.Whitespace;
+                            type = PredefinedClassificationTypeNames.WhiteSpace;
                         else if (char.IsWhiteSpace(token[0]))
-                            type = TokenTypes.Whitespace;
-                        else if (token[0] == '?' || token[0] == '$' && token[1] == '?')
-                            type = TokenTypes.Variable;
+                            type = PredefinedClassificationTypeNames.WhiteSpace;
                         else if (token[0] == ';')
-                            type = TokenTypes.Comment;
+                            type = PredefinedClassificationTypeNames.Comment;
                         else if (token[0] == '"')
-                            type = TokenTypes.String;
-                        if (type != TokenTypes.None)
+                            type = PredefinedClassificationTypeNames.String;
+                        else if (token[0] == '?' || token[0] == '$' && token[1] == '?')
+                            type = PredefinedClassificationTypeNames.Identifier;
+                        else
+                            type = PredefinedClassificationTypeNames.SymbolReference;
+                        if (type != null)
                         {
                             var tag = new ClipsTokenTag(type);
                             var span = new TagSpan<ClipsTokenTag>(tokenSpan, tag);

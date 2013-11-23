@@ -8,7 +8,7 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyTitle("ClipsLanguage")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("")]
+[assembly: AssemblyCompany("https://github.com/ricksladkey/ClipsLanguage")]
 [assembly: AssemblyProduct("ClipsLanguage")]
 [assembly: AssemblyCopyright("")]
 [assembly: AssemblyTrademark("")]

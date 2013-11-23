@@ -70,13 +70,25 @@ namespace ClipsLanguage
                 // Language keywords.
                 { "if", PredefinedClassificationTypeNames.Keyword },
                 { "then", PredefinedClassificationTypeNames.Keyword },
+                { "else", PredefinedClassificationTypeNames.Keyword },
+                { "loop-for-count", PredefinedClassificationTypeNames.Keyword },
+                { "while", PredefinedClassificationTypeNames.Keyword },
+                { "return", PredefinedClassificationTypeNames.Keyword },
                 { "slot", PredefinedClassificationTypeNames.Keyword },
                 { "multislot", PredefinedClassificationTypeNames.Keyword },
                 { "role", PredefinedClassificationTypeNames.Keyword },
                 { "pattern-match", PredefinedClassificationTypeNames.Keyword },
                 { "bind", PredefinedClassificationTypeNames.Keyword },
+
+                // Common language support methods.
                 { "assert", PredefinedClassificationTypeNames.Keyword },
                 { "retract", PredefinedClassificationTypeNames.Keyword },
+                { "focus", PredefinedClassificationTypeNames.Keyword },
+                { "batch", PredefinedClassificationTypeNames.Keyword },
+                { "run", PredefinedClassificationTypeNames.Keyword },
+                { "reset", PredefinedClassificationTypeNames.Keyword },
+                { "make-instance", PredefinedClassificationTypeNames.Keyword },
+                { "set-strategy", PredefinedClassificationTypeNames.Keyword },
 
                 // Conditional elements.
                 { "test", PredefinedClassificationTypeNames.Keyword },
@@ -114,13 +126,13 @@ namespace ClipsLanguage
 
                 // Common built-in methods.
                 { "eq", PredefinedClassificationTypeNames.PreprocessorKeyword },
+                { "neq", PredefinedClassificationTypeNames.PreprocessorKeyword },
                 { "send", PredefinedClassificationTypeNames.PreprocessorKeyword },
                 { "instance-address", PredefinedClassificationTypeNames.PreprocessorKeyword },
                 { "str-cat", PredefinedClassificationTypeNames.PreprocessorKeyword },
                 { "format", PredefinedClassificationTypeNames.PreprocessorKeyword },
                 { "open", PredefinedClassificationTypeNames.PreprocessorKeyword },
                 { "close", PredefinedClassificationTypeNames.PreprocessorKeyword },
-                { "run", PredefinedClassificationTypeNames.PreprocessorKeyword },
                 { "exit", PredefinedClassificationTypeNames.PreprocessorKeyword },
                 { "nth$", PredefinedClassificationTypeNames.PreprocessorKeyword },
                 { "progn$", PredefinedClassificationTypeNames.PreprocessorKeyword },
@@ -130,7 +142,6 @@ namespace ClipsLanguage
                 { "printout", PredefinedClassificationTypeNames.PreprocessorKeyword },
                 { "find-instance", PredefinedClassificationTypeNames.PreprocessorKeyword },
                 { "find-all-instances", PredefinedClassificationTypeNames.PreprocessorKeyword },
-
             };
         }
 

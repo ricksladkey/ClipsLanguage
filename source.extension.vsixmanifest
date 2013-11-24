@@ -1,12 +1,15 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Vsix Version="1.0.0" xmlns="http://schemas.microsoft.com/developer/vsx-schema/2010">
-  <Identifier Id="ClipsLanguage..c729d6b2-f512-49ed-893d-a8f61f25db98">
-    <Name>ClipsLanguage</Name>
+  <Identifier Id="9ec8f525-55cf-419a-b3df-143623bd03ee">
+    <Name>CLIPS Language Support for Visual Studio</Name>
     <Author>Rick Sladkey</Author>
-    <Version>1.0</Version>
-    <Description>This is a classifier extension to the Visual Studio Editor for the CLIPS Language.</Description>
+    <Version>1.0.0</Version>
+    <Description>Provides support for editing CLIPS language programs.</Description>
+    <MoreInfoUrl>https://github.com/ricksladkey/ClipsLanguage</MoreInfoUrl>
     <Locale>1033</Locale>
     <License>license.txt</License>
+    <Icon>package-icon.png</Icon>
+    <PreviewImage>package-screenshot.png</PreviewImage>
     <SupportedProducts>
       <VisualStudio Version="10.0">
         <Edition>Ultimate</Edition>

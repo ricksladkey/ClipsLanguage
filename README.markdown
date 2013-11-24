@@ -14,6 +14,7 @@ Colors are controlled by the normal text editor classification types:
 * Keyword (if, then, else, etc., defrule, deftemplate, etc.)
 * Operator (parentheses, etc.)
 * Literal (t, nil, etc.)
+* Identifier (CLIPS variables)
 * Symbol Reference (conditional keywords and attribute constraints)
 * Symbol Definition (name after defrule, etc.)
 * Preprocessor Keyword (common CLIPS builtin functions)

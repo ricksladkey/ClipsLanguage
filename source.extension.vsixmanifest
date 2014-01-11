@@ -3,8 +3,8 @@
   <Identifier Id="9ec8f525-55cf-419a-b3df-143623bd03ee">
     <Name>CLIPS Language Support for Visual Studio</Name>
     <Author>Rick Sladkey</Author>
-    <Version>1.0.0</Version>
-    <Description>Provides support for editing CLIPS language programs.</Description>
+    <Version>1.0.1</Version>
+    <Description>Support for editing CLIPS language programs</Description>
     <MoreInfoUrl>https://github.com/ricksladkey/ClipsLanguage</MoreInfoUrl>
     <Locale>1033</Locale>
     <License>license.txt</License>
@@ -23,8 +23,14 @@
         <Edition>Pro</Edition>
         <Edition>IntegratedShell</Edition>
       </VisualStudio>
+      <VisualStudio Version="12.0">
+        <Edition>Ultimate</Edition>
+        <Edition>Premium</Edition>
+        <Edition>Pro</Edition>
+        <Edition>IntegratedShell</Edition>
+      </VisualStudio>
     </SupportedProducts>
-    <SupportedFrameworkRuntimeEdition MinVersion="4.0" MaxVersion="4.5" />
+    <SupportedFrameworkRuntimeEdition MinVersion="4.0" MaxVersion="5.0" />
   </Identifier>
   <References />
   <Content>

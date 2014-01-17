@@ -1,20 +1,17 @@
-﻿// Copyright (c) Microsoft Corporation
-// All rights reserved
+﻿using System;
+using System.Collections.Generic;
+using System.ComponentModel.Composition;
+using Microsoft.VisualStudio.Text;
+using Microsoft.VisualStudio.Text.Classification;
+using Microsoft.VisualStudio.Text.Editor;
+using Microsoft.VisualStudio.Text.Tagging;
+using Microsoft.VisualStudio.Utilities;
+using System.Diagnostics;
+using System.Text;
+using Microsoft.VisualStudio.Language.StandardClassification;
 
 namespace ClipsLanguage
 {
-    using System;
-    using System.Collections.Generic;
-    using System.ComponentModel.Composition;
-    using Microsoft.VisualStudio.Text;
-    using Microsoft.VisualStudio.Text.Classification;
-    using Microsoft.VisualStudio.Text.Editor;
-    using Microsoft.VisualStudio.Text.Tagging;
-    using Microsoft.VisualStudio.Utilities;
-    using System.Diagnostics;
-    using System.Text;
-    using Microsoft.VisualStudio.Language.StandardClassification;
-
     [Export(typeof(ITaggerProvider))]
     [ContentType("clips")]
     [TagType(typeof(ClipsTokenTag))]
